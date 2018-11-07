@@ -1,0 +1,12 @@
+Schleife für i<1 -> 31 instructions
+Schleife für i<2 -> 43 instructions
+Schleife für i<3 -> 55 instructions
+
+-> 19 instructions Offset
+-> 12 instruction pro Schleife (2 Stück) pro instruction
+
+Frequenz = 12 MHz -> 12 mio. instructions / Sekunde
+soll blinken alle 0.5 Sekunden daher 12 mio. / 2 = 6 mio
+12 instructionen pro i -> 6 mio / 12 = 500'000 
+
+i = Frequenz / (2 * 12)
