@@ -1,4 +1,4 @@
-Schleife für i<1 -> 31 instructions
+﻿Schleife für i<1 -> 31 instructions
 Schleife für i<2 -> 43 instructions
 Schleife für i<3 -> 55 instructions
 
@@ -10,3 +10,7 @@ soll blinken alle 0.5 Sekunden daher 12 mio. / 2 = 6 mio
 12 instructionen pro i -> 6 mio / 12 = 500'000 
 
 i = Frequenz / (2 * 12)
+
+-> Wenn Zeitschleife aktiv ist, reagiert der Switch nur nach komplett abgelaufener Schleife (in nächster Iteration kurz vor dem Ausgehen)
+-> ab Opimierung 1 wird die Schleifenvariable i wegoptimiert, wenn sie nicht volatile ist (Praktikum 1)
+-> Mit Interrupt keinerlei Einfluss aufeinander (Blinkt in regelmäßiger Frequenz, Schlater funktionieren direkt)

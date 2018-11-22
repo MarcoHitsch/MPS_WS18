@@ -47,18 +47,18 @@ void Timer3_init( void )
     TC_ACPA_SET_OUTPUT    |    //ACPA    : Register A set TIOA
     TC_WAVE               |    //WAVE    : Waveform mode
     TC_CPCTRG             |    //CPCTRG  : Register C compare trigger enable
-    TC_CLKS_MCK1024;           //TCCLKS  : MCKI / 1024
+    TC_CLKS_MCK8;           //TCCLKS  : MCKI / 8
 
   // Initialize the counter:
-  timerbase3->TC_RA = 400;	// 500
-  timerbase3->TC_RC = 800;	//62500 für 50 Hz -> 63000 da RA 500
+  timerbase3->TC_RA = 31250;	
+  timerbase3->TC_RC = 62500;	
 
   // Start the timer :
-  timerbase3->TC_CCR = TC_CLKEN ;	//__
-  timerbase3->TC_CCR = TC_SWTRG ;	//__
-  piobaseA->PIO_PER  = (1<<PIOTIOA3) ;	//__
-  piobaseA->PIO_OER  = (1<<PIOTIOA3) ;	//__
-  piobaseA->PIO_CODR = (1<<PIOTIOA3) ;	//__
+  timerbase3->TC_CCR = TC_CLKEN ;	// Clock Enable
+  timerbase3->TC_CCR = TC_SWTRG ;	// Software Trigger
+  piobaseA->PIO_PER  = (1<<PIOTIOA3) ;	// PIO Disable (Pumpe aus)
+  piobaseA->PIO_OER  = (1<<PIOTIOA3) ;	// Output enabled
+  piobaseA->PIO_CODR = (1<<PIOTIOA3) ;	// Output cleared
 }
 
 int main(void)

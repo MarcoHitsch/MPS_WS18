@@ -4,6 +4,9 @@
 // vom: 
 // 
 
+// Alles Low Active, heißt Schalter gedrückt führt zu Key = 0 !!!
+// LED Clear heißt LED ist an, LED Set heißt LED ist aus !!!
+
 #include "../h/pmc.h"
 #include "../h/pio.h"
 
@@ -20,21 +23,20 @@ int main(void)
   while(1)
   {
     // Alle LEDs
-    // piobaseB->PIO_CODR = ALL_LEDS;
-    // piobaseB->PIO_SODR = ALL_LEDS;
+    piobaseB->PIO_CODR = ALL_LEDS;
+    piobaseB->PIO_SODR = ALL_LEDS;
 
+    // Taste 1 -> LED1 an
+    if(!(piobaseB->PIO_PDSR & KEY1)) 
+		{
+        piobaseB->PIO_CODR = LED1; 
+		}
     
-    // // Taste 1 -> LED1 an
-    // if(piobaseB->PIO_PDSR&KEY1) 
-		// {
-    //     piobaseB->PIO_SODR = LED1; 
-		// }
-    
-    // // Taste 1 -> LED1 aus
-		// if(piobaseB->PIO_PDSR&KEY2)
-		// {
-		// 	  piobaseB->PIO_CODR = LED1;
-    // }
+    // Taste 1 -> LED1 aus
+		if(!(piobaseB->PIO_PDSR & KEY2))
+		{
+			  piobaseB->PIO_SODR = LED1;
+    }
     
     // Blinken
     piobaseB->PIO_CODR = LED2; // LED2 aus
