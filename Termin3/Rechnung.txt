@@ -1,0 +1,15 @@
+fA = 50 Hz
+TA = 20 ms
+
+fSys = 25 MHz
+TSys = 40 ns
+
+Pre = 25 MHz / (50Hz * 2^16) = 7.63 -> 8
+
+TPre = 40 ns * 8 = 320 ns
+TA = 20 * 10^6 ns
+
+Rc = 2*10^16 / 320 = 62500
+Ra = 50% (symmetrisches Rechteck) = 62500 / 2 = 31250
+
+
