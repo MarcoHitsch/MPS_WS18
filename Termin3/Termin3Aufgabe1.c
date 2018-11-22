@@ -9,28 +9,36 @@
 #include "../h/pio.h"
 #include "../h/aic.h"
 
+StructPIO* piobaseA   = PIOA_BASE; // Basisadresse PIO A
+StructPIO* piobaseB   = PIOB_BASE;		// Basisadresse PIO B
+StructAIC* aicbase  = AIC_BASE;		// Basisadresse Interuptconstroller
+StructTC* timerbase3  = TCB3_BASE; // Basisadressse TC Block 1
+StructPMC* pmcbase	= PMC_BASE;		// Basisadresse des PMC
+
 void taste_irq_handler (void) __attribute__ ((interrupt));
 
-// Interruptserviceroutine f�r die Tasten SW1 und SW2
+// Interruptserviceroutine f�r die Tasten SW1 und SW2
 void taste_irq_handler (void)
 {
-  StructPIO* piobaseB   = PIOB_BASE;		// Basisadresse PIO B
-  StructAIC* aicbase  = AIC_BASE;		//__
-	
-// ab hier entsprechend der Aufgabestellung erg�nzen
+// ab hier entsprechend der Aufgabestellung erg�nzen
 // *************************************************
+  
+  if(!(piobaseB->PIO_PDSR&KEY1)) // Taste 1 gedrückt
+	{
+      piobaseA->PIO_PER  = (1<<PIOTIOA3); // Pumpe aus (low active)
+  }
 
-	
-	
-	aicbase->AIC_EOICR = piobaseB->PIO_ISR;	//__
+  if(!(piobaseB->PIO_PDSR&KEY2)) // Taste 2 gedrückt
+	{
+      piobaseA->PIO_PDR  = (1<<PIOTIOA3); // Pumpe an (low active)
+  }
+
+	aicbase->AIC_EOICR = piobaseB->PIO_ISR;	// interupt beendet
 }
 
 // Timer3 initialisieren
 void Timer3_init( void )
 {
-  StructTC* timerbase3  = TCB3_BASE;	// Basisadressse TC Block 1
-  StructPIO* piobaseA   = PIOA_BASE;	// Basisadresse PIO B
-
 	timerbase3->TC_CCR = TC_CLKDIS;	// Disable Clock
  
   // Initialize the mode of the timer 3
@@ -42,8 +50,8 @@ void Timer3_init( void )
     TC_CLKS_MCK1024;           //TCCLKS  : MCKI / 1024
 
   // Initialize the counter:
-  timerbase3->TC_RA = 400;	//__
-  timerbase3->TC_RC = 800;	//__
+  timerbase3->TC_RA = 400;	// 500
+  timerbase3->TC_RC = 800;	//62500 für 50 Hz -> 63000 da RA 500
 
   // Start the timer :
   timerbase3->TC_CCR = TC_CLKEN ;	//__
@@ -55,19 +63,22 @@ void Timer3_init( void )
 
 int main(void)
 {
-
-	StructPMC* pmcbase	= PMC_BASE;		// Basisadresse des PMC
-	StructPIO* piobaseA   	= PIOA_BASE;		// Basisadresse PIO A
-	StructPIO* piobaseB   	= PIOB_BASE;		// Basisadresse PIO B
-
-	pmcbase->PMC_PCER	= 0x4000;	// Peripheral Clocks einschalten f�r PIOB, _____ 
+  pmcbase->PMC_PCER	= 0x6200;	// Peripheral Clocks einschalten für PIOB, PIOA, TC3
+  piobaseB->PIO_PER = KEY1 | KEY2; // Tasten aktivieren
+  piobaseB->PIO_IER = KEY1 | KEY2; // Interupts für Tasten aktivieren
 	
-// ab hier entsprechend der Aufgabestellung erg�nzen
+// ab hier entsprechend der Aufgabestellung erg�nzen
 //**************************************************
 
+  // Interupt für Tasten einstellen
+  aicbase->AIC_IDCR = 1 << 14;		// Disable PIOB
+  aicbase->AIC_ICCR = 1 << 14;		// Clear PIOB
+  aicbase->AIC_SMR[14] = AIC_PRIOR;	// Prio für PIOB
+  aicbase->AIC_SVR[14] = (unsigned int)irq_handler; // Handler eintragen
+  aicbase->AIC_IECR = 0x4000;		// Enable für PIOB
 
+  Timer3_init();
 
-	
 	while(1)
 	{
 
